@@ -1,7 +1,6 @@
 package hiber.dao;
 
 import hiber.model.User;
-import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
@@ -21,29 +20,21 @@ public class UserDaoImp implements UserDao {
     }
 
     @Override
-    @SuppressWarnings("unchecked") //сообщает компилятору, что программист считает код безопасным и не вызовет непредвиденных исключений.
+    @SuppressWarnings("unchecked")
+    //сообщает компилятору, что программист считает код безопасным и не вызовет непредвиденных исключений.
     public List<User> listUsers() {
-        TypedQuery<User> query=sessionFactory.getCurrentSession().createQuery("from User");
+        TypedQuery<User> query = sessionFactory.getCurrentSession().createQuery("from User");
         return query.getResultList();
     }
 
+    @Override
+    public List<User> listUsersOnCar(String model, int series) {
+        String hql = "from User u join fetch u.car as c where c.model = :model and c.series = :series";
+        TypedQuery<User> query = sessionFactory.getCurrentSession().createQuery(hql);
+        query.setParameter("model", model);
+        query.setParameter("series", series);
+        return query.getResultList();
 
-    public List<User> listUsersOnCar(String model, int series) { //Получение объектов из таблицы
-        List<User> users = null;
-        Session session = sessionFactory.openSession(); // открытие сессии
-        try {
-            session.beginTransaction(); // открытие транзакции
-            users = session.createQuery("FROM User u WHERE car.model =: model AND car.series =: series", User.class) //создание запроса (поиск объектов по модели и серии)
-                    .setParameter("model", model)
-                    .setParameter("series", series)
-                    .getResultList(); // получение результата
-            session.getTransaction().commit(); // закрытие транзакции
-        } catch (Exception e) {
-            session.getTransaction().rollback(); // откат всех модификаций
-            e.printStackTrace();
-        } finally {
-            session.close(); // закрытие сессии
-        }
-        return users; //возвращает таблицу
+
     }
 }

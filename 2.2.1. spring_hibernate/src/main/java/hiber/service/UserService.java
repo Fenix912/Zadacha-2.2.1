@@ -8,5 +8,5 @@ public interface UserService {
     void add(User user); // Добавляет юзеров
     List<User> listUsers(); //Список юзеров
 
-
+    List<User> listUsersOnCar(String model, int series);
 }
