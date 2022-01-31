@@ -1,16 +1,18 @@
 package hiber.model;
 
+import org.springframework.beans.factory.annotation.Autowired;
+
 import javax.persistence.*;
 
-@Entity
-@Table(name = "users")
+@Entity // Данная вннотация готоворит о том, что данный класс будет отображен в базе данных
+@Table(name = "users") // Прописываем с какой таблицей будем связаны
 public class User {
 
-   @Id
-   @GeneratedValue(strategy = GenerationType.IDENTITY)
+   @Id // данный солбец будет в таблице праймариКей
+   @GeneratedValue(strategy = GenerationType.IDENTITY) // описывает стратегию по генерации значения ПраймериКей
    private Long id;
 
-   @Column(name = "name")
+   @Column(name = "name") // указываем с каким столбцом в таблице делаем связку
    private String firstName;
 
    @Column(name = "last_name")
@@ -19,12 +21,18 @@ public class User {
    @Column(name = "email")
    private String email;
 
+   @OneToOne(cascade = CascadeType.ALL) // тип отношений м/у объектами(если делаем определенные операции с users,
+   // возможно информация о Car будет изменена, сохранение, удаление)
+   @JoinColumn(name = "car_id") //С помощью столбца (car_id -ForenKey )осуществляется свять между таблицами
+   private Car car;
+
    public User() {}
-   
-   public User(String firstName, String lastName, String email) {
+
+   public User(String firstName, String lastName, String email, Car car) {
       this.firstName = firstName;
       this.lastName = lastName;
       this.email = email;
+      this.car=car;
    }
 
    public Long getId() {
@@ -58,4 +66,13 @@ public class User {
    public void setEmail(String email) {
       this.email = email;
    }
+
+   public void setCar(Car car) {
+      this.car = car;
+   }
+
+   public Car getCar() {
+      return car;
+   }
+
 }
